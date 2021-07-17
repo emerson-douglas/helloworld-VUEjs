@@ -1,13 +1,16 @@
 <template>
   <div id="app">
-
-    <p>{{ dados.login }}</p>
-    <img :src="dados.avatar_url" :alt="dados.login">
+    <Pcard :img="dados.avatar_url" :nome="dados.login">
     <hr><p>projetos:</p><br>
     <p v-for="repo in repos" :key="repo.id" >
-      ...{{repo.name}}..<br>{{ repo.html_url }}
+<span class="lang">
+{{repo.language}}<br>
+</span>
+      {{repo.name}}<br>{{repo.description}}<br>
+      <a :href="repo.html_url">{{ repo.html_url }}</a>
       </p>
-
+    </Pcard>
+    <p>{{ erro }}</p>
   </div>
 
 
@@ -15,44 +18,60 @@
 </template>
 
 <script>
-import api from'./services/api'
+import Api from'./services/api'
+import Pcard from './components/Pcard.vue'
 
 export default {
 data(){
   return{
     dados:[], //array de dados da busca
     user: 'emerson-douglas', //nome do usuario que você deseja buscar
+    erro:'',
     repos:[],
 
   }
 },
 
   name: 'App',
-  components: {},
+    components: {
+    Pcard
+  },
 
   created(){
     //quando a tela é carregada realiza a busca na API
-    api.get("users/"+this.user)
-    .then(res =>
-    {this.dados = res.data
-    api.get(this.dados.repos_url) //pega a lista de repositorios
+    Api.get("users/"+this.user)
+    .then(res =>{
+    this.dados = res.data
+    Api.get(this.dados.repos_url) //pega a lista de repositorios
     .then(r=>this.repos = r.data,
     err=>console.log(err))
     },
-     err=>console.log("ops! ocorreu um erro" + err)
+    ()=>this.erro="ocorreu um erro ao carregar os dados,tente novamente mais tarde"
   )}
 }
 </script>
 
-<style scoped>
-.card{
-}
+<style>
 #app {
+  padding: 40px;
+  display: flex 0;
+  align-content: center;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: white;
+  margin-top: -20px;
+  height:100%;
+  width: auto;
+  background:#2c3e50 ;
+}
+a{color:white}
+.lang{
+  background: gray;
+  color: black;
+}
+body {
+  background: #2c3e50;
 }
 </style>
